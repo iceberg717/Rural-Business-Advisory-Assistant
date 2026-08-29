@@ -1,0 +1,127 @@
+{
+  "report_title": "Marketwise Price & Arrival Report (25-08-2026)",
+  "report_date": "2026-08-25",
+  "price_unit": "Rs./Quintal",
+  "commodities": [
+    {
+      "commodity_group": "Cereals",
+      "commodity": "Bajra(Pearl Millet/Cumbu)",
+      "msp_rs_per_quintal_2026_27": 2775.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 2375.64
+      }
+    },
+    {
+      "commodity_group": "Cereals",
+      "commodity": "Barley(Jau)",
+      "msp_rs_per_quintal_2026_27": 2150.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 2592.0
+      }
+    },
+    {
+      "commodity_group": "Cereals",
+      "commodity": "Jowar(Sorghum)",
+      "msp_rs_per_quintal_2026_27": 3699.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 6078.25
+      }
+    },
+    {
+      "commodity_group": "Cereals",
+      "commodity": "Maize",
+      "msp_rs_per_quintal_2026_27": 2400.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 2465.42
+      }
+    },
+    {
+      "commodity_group": "Cereals",
+      "commodity": "Wheat",
+      "msp_rs_per_quintal_2026_27": 2585.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 2662.18
+      }
+    },
+    {
+      "commodity_group": "Fibre Crops",
+      "commodity": "Cotton",
+      "msp_rs_per_quintal_2026_27": 7710.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 9453.7
+      }
+    },
+    {
+      "commodity_group": "Oil Seeds",
+      "commodity": "Groundnut",
+      "msp_rs_per_quintal_2026_27": 7263.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 7029.29
+      }
+    },
+    {
+      "commodity_group": "Oil Seeds",
+      "commodity": "Mustard",
+      "msp_rs_per_quintal_2026_27": 6200.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 7427.53
+      }
+    },
+    {
+      "commodity_group": "Oil Seeds",
+      "commodity": "Sesamum(Sesame,Gingelly,Til)",
+      "msp_rs_per_quintal_2026_27": 9846.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 12241.1
+      }
+    },
+    {
+      "commodity_group": "Pulses",
+      "commodity": "Black Gram(Urd Beans)(Whole)",
+      "msp_rs_per_quintal_2026_27": 7800.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 8175.66
+      }
+    },
+    {
+      "commodity_group": "Pulses",
+      "commodity": "Green Gram(Moong)(Whole)",
+      "msp_rs_per_quintal_2026_27": 8768.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 7117.47
+      }
+    },
+    {
+      "commodity_group": "Pulses",
+      "commodity": "Red gram/Arhar/Tur(whole)",
+      "msp_rs_per_quintal_2026_27": 8000.0,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 7584.89
+      }
+    },
+    {
+      "commodity_group": "Vegetables",
+      "commodity": "Onion",
+      "msp_rs_per_quintal_2026_27": null,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 3017.02
+      }
+    },
+    {
+      "commodity_group": "Vegetables",
+      "commodity": "Potato",
+      "msp_rs_per_quintal_2026_27": null,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 1026.53
+      }
+    },
+    {
+      "commodity_group": "Vegetables",
+      "commodity": "Tomato",
+      "msp_rs_per_quintal_2026_27": null,
+      "price_rs_per_quintal": {
+        "25_aug_2026": 1648.07
+      }
+    }
+  ]
+}

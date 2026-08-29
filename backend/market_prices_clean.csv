@@ -1,0 +1,16 @@
+commodity_group,commodity,msp_rs_per_quintal,price_rs_per_quintal,price_date
+Cereals,Bajra(Pearl Millet/Cumbu),2775.0,2375.64,2026-08-25
+Cereals,Barley(Jau),2150.0,2592.0,2026-08-25
+Cereals,Jowar(Sorghum),3699.0,6078.25,2026-08-25
+Cereals,Maize,2400.0,2465.42,2026-08-25
+Cereals,Wheat,2585.0,2662.18,2026-08-25
+Fibre Crops,Cotton,7710.0,9453.7,2026-08-25
+Oil Seeds,Groundnut,7263.0,7029.29,2026-08-25
+Oil Seeds,Mustard,6200.0,7427.53,2026-08-25
+Oil Seeds,"Sesamum(Sesame,Gingelly,Til)",9846.0,12241.1,2026-08-25
+Pulses,Black Gram(Urd Beans)(Whole),7800.0,8175.66,2026-08-25
+Pulses,Green Gram(Moong)(Whole),8768.0,7117.47,2026-08-25
+Pulses,Red gram/Arhar/Tur(whole),8000.0,7584.89,2026-08-25
+Vegetables,Onion,,3017.02,2026-08-25
+Vegetables,Potato,,1026.53,2026-08-25
+Vegetables,Tomato,,1648.07,2026-08-25

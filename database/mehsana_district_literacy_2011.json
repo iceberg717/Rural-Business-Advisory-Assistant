@@ -1,0 +1,36 @@
+{
+  "district": "Mehsana",
+  "state": "Gujarat",
+  "source": "Census of India 2011",
+  "district_total": {
+    "population": 2035064,
+    "male_population": 1056520,
+    "female_population": 978544,
+    "literate": 1502645,
+    "illiterate": 532419,
+    "literacy_rate_percent": 83.61
+  },
+  "rural": {
+    "population": 1520734,
+    "male_population": 787175,
+    "female_population": 733559,
+    "literate": {
+      "total": 1095809,
+      "male": 623765,
+      "female": 472044
+    },
+    "literacy_rate_percent": {
+      "total": 81.97,
+      "male": 90.65,
+      "female": 72.77
+    }
+  },
+  "urban": {
+    "population": 514330,
+    "male_population": 269345,
+    "female_population": 244985,
+    "literate": 406836,
+    "illiterate": 107494
+  }
+
+}

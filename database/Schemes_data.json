@@ -1,0 +1,262 @@
+{
+  "sih_project_recommended_schemes": {
+    "overview": "These 7 schemes are recommended for your SIH MVP because they have clear, documented parameters, cover different project cost tiers, and are actively operational. Start with these for your prototype, then expand.",
+    "total_schemes_to_implement": 7,
+    "schemes": [
+      {
+        "rank": 1,
+        "scheme_id": "PM_MUDRA_YOJANA",
+        "scheme_name": "PM MUDRA Yojana (Pradhan Mantri Micro Units Development and Refinance Agency)",
+        "why_include": "Most documented central scheme, clear tier structure, high accessibility, no collateral, best for small businesses under ₹10 lakh",
+        "target_group": "All micro-entrepreneurs (non-farm, income-generating)",
+        "project_cost_range": "Flexible (no fixed cap, but loans in three tiers: 50K, 5L, 10L)",
+        "margin_requirement": "Varies by lending bank (typically 10-20%, not fixed by scheme)",
+        "loan_coverage": "100% of approved amount (no collateral required)",
+        "max_loan_amount": "₹10,00,000 (Tarun tier)",
+        "interest_rate": "Bank MCLR + spreads (varies, typically 9-13% range)",
+        "tenure_years": "3-5 years (bank-determined)",
+        "moratorium_months": "Typically 0-3 months (bank-determined)",
+        "subsidy": "None (pure credit, no subsidy)",
+        "collateral_required": false,
+        "best_for_businesses": ["Dairy collection centre", "Small retail shop", "Repair shop", "Food stall", "Tailoring unit"],
+        "data_verification_difficulty": "EASY - fully documented on mudra.org.in and SIDBI portal",
+        "official_portal": "https://www.mudra.org.in/",
+        "documentation_status": "✓ Verified - use this for your calculator first"
+      },
+      {
+        "rank": 2,
+        "scheme_id": "PMEGP",
+        "scheme_name": "Prime Minister's Employment Generation Programme",
+        "why_include": "Clear tiered structure with subsidy, good for projects ₹10L to ₹25L, well-documented by KVIC",
+        "target_group": "General category (10% margin) | SC/ST/OBC/Women/Ex-servicemen (5% margin)",
+        "project_cost_range": "₹10,00,000 to ₹25,00,000 (manufacturing) | ₹10,00,000 to ₹10,00,000 (service)",
+        "margin_requirement": "10% (General) | 5% (Special category)",
+        "loan_coverage": "Remaining 90% to 95%",
+        "max_loan_amount": "₹25,00,000 (manufacturing) | ₹10,00,000 (service)",
+        "subsidy": "15% to 35% of project cost (credit-linked subsidy via KVIC)",
+        "interest_rate": "Bank MCLR + spreads (typically 8-11%)",
+        "tenure_years": "3-7 years (bank & project-dependent)",
+        "moratorium_months": "0-6 months (after project completion/commissioning)",
+        "best_for_businesses": ["Dairy farm/processing", "Food processing", "Textile unit", "Retail with manufacturing", "Agri-business"],
+        "data_verification_difficulty": "EASY - fully documented on kviconline.gov.in",
+        "official_portal": "https://www.kviconline.gov.in/pmegpeportal/",
+        "documentation_status": "✓ Verified - second priority for your calculator"
+      },
+      {
+        "rank": 3,
+        "scheme_id": "STANDUP_INDIA",
+        "scheme_name": "Stand-Up India Scheme",
+        "why_include": "Targets SC/ST/Women specifically, clear ₹10L to ₹1Cr range, 25% margin support, well-documented",
+        "target_group": "SC, ST, and Women entrepreneurs (greenfield/new project only)",
+        "project_cost_range": "₹10,00,000 to ₹10,00,00,000 (₹1 Crore max)",
+        "margin_requirement": "10% (borrower to provide)",
+        "loan_coverage": "90%",
+        "max_loan_amount": "₹1,00,00,000",
+        "interest_rate": "Bank MCLR + 3% + tenor premium (ceiling: SBI base + 1.75%)",
+        "tenure_years": "7 years",
+        "moratorium_months": "18 months (for project-based businesses like dairy, agriculture, manufacturing)",
+        "subsidy": "25% margin money support (via CGFSIL/government guarantee)",
+        "collateral_required": "Conditional (guarantee-based, limited collateral needed)",
+        "best_for_businesses": ["Dairy farm setup", "Agri-processing unit", "Small manufacturing", "Women-led retail"],
+        "data_verification_difficulty": "EASY - fully documented on standupmitra.in",
+        "official_portal": "https://www.standupmitra.in/",
+        "documentation_status": "✓ Verified - good for SC/ST/Women-focused scenarios"
+      },
+      {
+        "rank": 4,
+        "scheme_id": "GSCDC_MARGIN_MONEY_SCHEME",
+        "scheme_name": "GSCDC Margin Money Loan Scheme (Gujarat Scheduled Caste Development Corporation)",
+        "why_include": "State-level, SC-targeted, closest structural match to problem statement's 'margin money + concessional loan' model. Essential for Mehsana demo.",
+        "target_group": "Scheduled Caste individuals (particularly BPL/low-income)",
+        "project_cost_range": "Flexible (typically small to medium projects, ₹50K to ₹20L range based on NABARD norms)",
+        "margin_requirement": "Varies (to be confirmed from GSCDC GR, likely 10-15%)",
+        "loan_coverage": "Remaining balance (likely 85-90%)",
+        "max_loan_amount": "To be confirmed from GSCDC GR (typically ₹5-20L for small enterprises)",
+        "interest_rate": "Concessional (typically 4-6% below bank rate, to be confirmed)",
+        "tenure_years": "Typically 3-7 years",
+        "moratorium_months": "3-6 months (to be confirmed)",
+        "subsidy": "Interest subsidy or margin money grant (to be confirmed)",
+        "collateral_required": "Conditional (RBI priority sector norms, typically required for loans > ₹25K)",
+        "best_for_businesses": ["Dairy collection centre", "Small retail", "Food processing", "Handicraft", "Service-sector units"],
+        "data_verification_difficulty": "MEDIUM - need to contact GSCDC Mehsana office directly for exact GR",
+        "official_contact": "GSCDC District Office, Mehsana | Phone: TBD | Email: TBD",
+        "documentation_status": "⚠ NEEDS VERIFICATION - highest priority for Mehsana demo credibility"
+      },
+      {
+        "rank": 5,
+        "scheme_id": "GBCDC_SMALL_BUSINESS_SCHEME",
+        "scheme_name": "GBCDC Small Business Scheme (Gujarat Backward Classes Development Corporation)",
+        "why_include": "OBC/SEBC-targeted state scheme, small project focus (₹2L cap), good for retail/service businesses in Mehsana",
+        "target_group": "SEBC / OBC individuals",
+        "project_cost_range": "Up to ₹2,00,000",
+        "margin_requirement": "To be confirmed (likely 10-20%)",
+        "loan_coverage": "Remaining balance",
+        "max_loan_amount": "₹2,00,000",
+        "interest_rate": "Concessional (to be confirmed, likely 4-6%)",
+        "tenure_years": "Typically 3-5 years",
+        "moratorium_months": "3-6 months (to be confirmed)",
+        "subsidy": "Interest subsidy or margin support (to be confirmed)",
+        "collateral_required": "Conditional",
+        "best_for_businesses": ["Grocery store", "Dairy parlour", "Fodder sales centre", "Mobile/computer repair shop", "Small retail"],
+        "data_verification_difficulty": "MEDIUM - contact GBCDC Mehsana for exact parameters",
+        "official_contact": "GBCDC office, Mehsana",
+        "documentation_status": "⚠ NEEDS VERIFICATION - check for current operative GR"
+      },
+      {
+        "rank": 6,
+        "scheme_id": "NABARD_COOPERATIVE_SCHEME",
+        "scheme_name": "NABARD Cooperative Sector Refinance (Dairy Focus)",
+        "why_include": "Mehsana's Dudhsagar Dairy ecosystem is massive — this scheme refinances cooperative dairy societies directly, making it highly relevant for your demo",
+        "target_group": "Dairy cooperative societies, milk producers' unions",
+        "project_cost_range": "Flexible (large-scale cooperative projects)",
+        "margin_requirement": "Varies by project type",
+        "loan_coverage": "Typically 80-100% (refinance-based)",
+        "max_loan_amount": "Unlimited (cooperative-scale)",
+        "interest_rate": "NABARD refinance rate (typically lower than retail banks, ~5-6%)",
+        "tenure_years": "5-10 years (cooperative-based)",
+        "moratorium_months": "6-12 months (project-dependent)",
+        "subsidy": "Possible government subsidies on top",
+        "collateral_required": "Society guarantee (not individual borrower)",
+        "best_for_businesses": ["Dairy collection centre (if part of registered society)", "Milk procurement unit", "Dairy processing (cooperative model)"],
+        "data_verification_difficulty": "MEDIUM - check NABARD regional office, Ahmedabad",
+        "official_portal": "https://www.nabard.org/",
+        "documentation_status": "✓ Semi-verified - NABARD rates are public, but need scheme-specific docs"
+      },
+      {
+        "rank": 7,
+        "scheme_id": "AATMANIRBHAR_GUJARAT_MSME",
+        "scheme_name": "Aatmanirbhar Gujarat Scheme (MSME Interest/Capital Subsidy)",
+        "why_include": "State subsidy scheme for new/existing MSMEs, stacks with bank loans, good showcase of multi-layer financing",
+        "target_group": "Registered MSMEs (Udyam-registered), varies by MSME category",
+        "project_cost_range": "Flexible (no fixed cap, applicable to investment in plant/machinery, equipment)",
+        "margin_requirement": "Not applicable (subsidy on top of bank loan)",
+        "loan_coverage": "Bank loan is separate; this scheme subsidizes interest/capital",
+        "max_loan_amount": "N/A — this is a subsidy, not a loan",
+        "interest_rate": "Base loan from bank + interest subsidy (typically 1-3% subsidy)",
+        "tenure_years": "As per underlying bank loan",
+        "moratorium_months": "As per underlying bank loan",
+        "subsidy": "Capital investment subsidy (%, ceilings vary by taluka category) + SGST reimbursement",
+        "collateral_required": "N/A (subsidy scheme, not a loan)",
+        "best_for_businesses": ["Any MSME in Mehsana buying new equipment/machinery"],
+        "data_verification_difficulty": "EASY - documented on msmec.gujarat.gov.in",
+        "official_portal": "https://msmec.gujarat.gov.in/",
+        "documentation_status": "✓ Verified - good add-on layer to show subsidy stacking"
+      }
+    ]
+  },
+  "implementation_roadmap": {
+    "phase_1_mvp": {
+      "description": "Build your Scheme Router with these 3 schemes first",
+      "schemes": [
+        "PM_MUDRA_YOJANA",
+        "PMEGP",
+        "STANDUP_INDIA"
+      ],
+      "reason": "These are fully documented, centrally administered, have clear parameters. Your calculator will work flawlessly with these.",
+      "effort": "1-2 weeks"
+    },
+    "phase_2_demo": {
+      "description": "Add state schemes for SIH demo credibility",
+      "schemes": [
+        "GSCDC_MARGIN_MONEY_SCHEME",
+        "GBCDC_SMALL_BUSINESS_SCHEME"
+      ],
+      "reason": "These are Mehsana-specific, make your demo locally relevant.",
+      "effort": "1 week (assuming you get GRs from GSCDC/GBCDC offices)"
+    },
+    "phase_3_extension": {
+      "description": "Add sector-specific schemes",
+      "schemes": [
+        "NABARD_COOPERATIVE_SCHEME",
+        "AATMANIRBHAR_GUJARAT_MSME"
+      ],
+      "reason": "Show that your router can handle different financing models (cooperative, subsidy-stacking).",
+      "effort": "1 week"
+    }
+  },
+  "data_collection_priority": {
+    "high_priority": [
+      {
+        "scheme": "PM_MUDRA_YOJANA",
+        "data_points": ["Tier structure (Shishu/Kishor/Tarun amounts)", "Typical interest rates by lending bank", "Processing time", "Required documents"],
+        "source": "https://www.mudra.org.in/ + SIDBI site",
+        "timeline": "Today"
+      },
+      {
+        "scheme": "PMEGP",
+        "data_points": ["Subsidy % by category and region", "Interest rates for each tier", "Tenure options", "Special documents for special category"],
+        "source": "https://www.kviconline.gov.in/pmegpeportal/",
+        "timeline": "Today"
+      },
+      {
+        "scheme": "GSCDC_MARGIN_MONEY_SCHEME",
+        "data_points": ["Exact margin % requirement", "Exact interest rate", "Project cost limits", "Moratorium details"],
+        "source": "GSCDC district office, Mehsana (phone/visit)",
+        "timeline": "This week (URGENT for Mehsana demo)"
+      }
+    ],
+    "medium_priority": [
+      {
+        "scheme": "STANDUP_INDIA",
+        "data_points": ["Current interest rate ceiling", "Guarantee-based collateral rules", "Processing timeline"],
+        "source": "https://www.standupmitra.in/ + SBI site",
+        "timeline": "Next week"
+      },
+      {
+        "scheme": "GBCDC_SMALL_BUSINESS_SCHEME",
+        "data_points": ["Current interest rate", "Exact loan cap", "Margin requirement"],
+        "source": "GBCDC office, Mehsana",
+        "timeline": "Next week"
+      }
+    ],
+    "nice_to_have": [
+      "NABARD_COOPERATIVE_SCHEME",
+      "AATMANIRBHAR_GUJARAT_MSME"
+    ]
+  },
+  "business_scenarios_to_build_demo_with": [
+    {
+      "scenario": 1,
+      "title": "Dairy Collection Centre (Unava village, Mehsana)",
+      "entrepreneur": "SC farmer wanting to set up milk collection",
+      "capital": "₹1,00,000",
+      "business_type": "Dairy",
+      "recommended_schemes": [
+        "GSCDC_MARGIN_MONEY_SCHEME (first choice, state-level SC support)",
+        "STANDUP_INDIA (fallback, national reach)",
+        "PM_MUDRA_YOJANA (simplest alternative)"
+      ],
+      "why_this_demo_works": "Mehsana has Dudhsagar Dairy; this is highly credible. GSCDC's exact parameters are crucial here."
+    },
+    {
+      "scenario": 2,
+      "title": "Small Retail Grocery Shop",
+      "entrepreneur": "OBC shopkeeper, Unjha town",
+      "capital": "₹80,000",
+      "business_type": "Retail",
+      "recommended_schemes": [
+        "GBCDC_SMALL_BUSINESS_SCHEME (direct match, ₹2L cap)",
+        "PM_MUDRA_YOJANA (Kishor tier, ₹50K-₹5L)"
+      ],
+      "why_this_demo_works": "GBCDC scheme was literally designed for this. Shows state scheme relevance."
+    },
+    {
+      "scenario": 3,
+      "title": "Small-Scale Spice Processing Unit",
+      "entrepreneur": "Women entrepreneur, Unjha (spice hub)",
+      "capital": "₹2,00,000",
+      "business_type": "Food Processing",
+      "recommended_schemes": [
+        "PMEGP (women subsidy + up to ₹25L loan)",
+        "STANDUP_INDIA (women + 25% margin support)"
+      ],
+      "why_this_demo_works": "Unjha is a renowned spice market; shows sector-specific viability. Women entrepreneur highlights inclusivity."
+    }
+  ],
+  "critical_reminders": {
+    "note_1": "Do NOT hardcode interest rates from secondary websites. Always verify against the official scheme GR or ministry portal.",
+    "note_2": "GSCDC and GBCDC schemes are your secret weapon for an SIH demo — they show deep local knowledge. Prioritize getting their GRs this week.",
+    "note_3": "The problem statement's exact ₹1.40L / ₹50L tiers still don't match any scheme exactly. Ask GSCDC/GBCDC or DIC Mehsana directly if those specific tiers exist in any state scheme GR.",
+    "note_4": "Your calculator's biggest credibility problem will be 'How did you get these numbers?' — always be ready to cite the GR date and source in your SIH presentation."
+  }
+}
