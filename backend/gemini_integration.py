@@ -1,6 +1,6 @@
 """
 LLM generation using Google Gemini API with graceful error handling and fallbacks.
-Supports both the modern google-genai SDK and REST API with AQ. and AIza keys.
+Supports both the modern google-genai SDK and REST API with dynamic model fallbacks.
 """
 import os
 import json
@@ -54,23 +54,32 @@ specializing in Mehsana district, Gujarat, India. You have deep expertise in:
 def get_gemini_api_key():
     return os.environ.get("GEMINI_API_KEY", "").strip()
 
-def gemini_call(prompt: str, model_name: str = "gemini-2.5-flash") -> str:
+
+def gemini_call(prompt: str, model_name: str = "gemini-3.7-flash", is_follow_up: bool = False) -> str:
     """
     Calls Gemini API using google-genai SDK or direct REST with fallbacks.
-    Includes an enriched system prompt for capital adequacy & subsidy analysis.
-    If the API call fails or key is missing/invalid, raises RuntimeError with details
-    so caller can fall back to local GraphRAG templates.
+    If is_follow_up is True, it skips the rigid dashboard system prompt and answers conversationally.
     """
     api_key = get_gemini_api_key()
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is not configured.")
 
-    models_to_try = [model_name, "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
-    # De-duplicate while preserving order
+    models_to_try = [
+        model_name,
+        "gemini-3.7-flash",
+        "gemini-3.6-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-2.5-flash",
+    ]
     models_to_try = list(dict.fromkeys(models_to_try))
 
-    # Build the combined prompt with system instructions prepended
-    full_prompt = f"{RURAL_ADVISOR_SYSTEM_PROMPT}\n\n---\n\n{prompt}"
+    # ---- NEW LOGIC HERE ----
+    # If it is a follow-up, DO NOT use the rigid RURAL_ADVISOR_SYSTEM_PROMPT
+    if is_follow_up:
+        full_prompt = prompt 
+    else:
+        full_prompt = f"{RURAL_ADVISOR_SYSTEM_PROMPT}\n\n---\n\n{prompt}"
+    # ------------------------
 
     # 1. Try google-genai SDK if available
     try:
@@ -86,7 +95,6 @@ def gemini_call(prompt: str, model_name: str = "gemini-2.5-flash") -> str:
                     return response.text
             except Exception as e:
                 err_str = str(e)
-                # If unauthenticated, further model attempts with same key will also fail
                 if "UNAUTHENTICATED" in err_str or "401" in err_str:
                     raise RuntimeError(f"Gemini Authentication Error (401): {err_str}")
                 continue
@@ -97,7 +105,7 @@ def gemini_call(prompt: str, model_name: str = "gemini-2.5-flash") -> str:
     except Exception:
         pass
 
-    # 2. Fallback to direct REST API with x-goog-api-key header
+    # 2. Fallback to direct REST API
     last_error = None
     for model in models_to_try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"

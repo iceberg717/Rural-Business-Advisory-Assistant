@@ -114,8 +114,8 @@ GEOAPIFY_API_KEY=your_geoapify_api_key_here
 
 Start the FastAPI application with Uvicorn:
 
-```powershell
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```powershell or terminal
+python -m uvicorn main:app --reload
 ```
 
 > **Keep this terminal window open** while using the web application.

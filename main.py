@@ -45,6 +45,10 @@ class ChatPayload(BaseModel):
     taluka: Optional[str] = None
     investment: Optional[str] = None
 
+# --- ADDED: MEMORY TRACKER ---
+# This dictionary remembers the last business context for each logged-in user
+active_sessions = {}
+
 
 def get_current_user(request: Request) -> Optional[dict]:
     """Helper to retrieve authenticated user from cookie."""
@@ -52,6 +56,40 @@ def get_current_user(request: Request) -> Optional[dict]:
     if not username:
         return None
     return find_user_by_username(username)
+
+
+def classify_intent(user_text: str, api_call_fn) -> str:
+    """Classifies if the user wants a NEW business, a FOLLOW-UP, or is asking TRIVIA."""
+    
+    # 1. AI ROUTER (Much smarter prompt to handle pivots and trivia)
+    router_prompt = f"""
+    You are an AI assistant for a Rural Business Advisor in Mehsana.
+    Analyze the user's input: "{user_text}"
+
+    Classify the input into exactly ONE of these three categories:
+    1. NEW_BUSINESS: If the user is proposing a new business idea, category, or industry (e.g. "textile weaving in Visnagar", "start a dairy", "solar farm"). Even if it starts with "Actually" or "How about", if it introduces a new industry, it is NEW_BUSINESS.
+    2. FOLLOW_UP: If the user is asking a question about costs, plans, subsidies, or giving a command related to an existing business (e.g. "build me a financial plan", "how do I register", "what about the costs").
+    3. TRIVIA: If the user is asking a completely unrelated question (e.g. "who won the world cup", "what is the weather", "tell me a joke").
+
+    Reply ONLY with the category name (NEW_BUSINESS, FOLLOW_UP, or TRIVIA).
+    """
+    
+    try:
+        # Note: We pass is_follow_up=True here so it bypasses the dashboard RAG prompt!
+        res = api_call_fn(router_prompt, is_follow_up=True).strip().upper()
+        if "NEW_BUSINESS" in res:
+            return "NEW_BUSINESS"
+        elif "TRIVIA" in res:
+            return "TRIVIA"
+        else:
+            return "FOLLOW_UP"
+    except Exception as e:
+        print(f"Router Error: {e}")
+        # Very basic local fallback if API fails
+        lower_text = user_text.lower()
+        if any(w in lower_text for w in ["plan", "cost", "register", "how"]):
+            return "FOLLOW_UP"
+        return "NEW_BUSINESS"
 
 
 # ---------------------------------------------------------------------------
@@ -253,6 +291,45 @@ async def chat_api(request: Request, payload: ChatPayload):
             status_code=400,
             content={"reply": "Please provide a valid question or business idea.", "status": "error"}
         )
+
+    # 1. SMART INTENT ROUTING
+    intent = classify_intent(user_message, gemini_call)
+    username = user["username"]
+
+    # --- NEW: TRIVIA / OUT-OF-SCOPE CATCHER ---
+    if intent == "TRIVIA":
+        return {
+            "status": "success", 
+            "reply": "I specialize strictly in rural business intelligence, MSME subsidies, and supply chain advisory for the Mehsana district. How can I assist you with your enterprise today?"
+        }
+
+    # 2. HANDLE CONVERSATIONAL FOLLOW-UP
+    if intent == "FOLLOW_UP":
+        # Retrieve what the user was previously talking about (or default if it's their first message)
+        last_context = active_sessions.get(username, "a generic rural business in Mehsana")
+        
+        try:
+            follow_up_prompt = f"""
+            You are an expert rural business advisor in Mehsana, Gujarat.
+            The user's current active business context is: "{last_context}"
+            
+            Based on this context, answer their follow-up question or command: "{user_message}"
+            
+            Provide a helpful, practical, and highly specific answer based on their exact business. 
+            Do not generate a full dashboard. Just answer the question directly.
+            """
+            answer = gemini_call(follow_up_prompt, is_follow_up=True)
+            # Return success with the conversational answer
+            return {"status": "success", "reply": answer}
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"reply": f"An error occurred while answering your question: {str(e)}", "status": "error"}
+            )
+
+    # 3. HANDLE NEW BUSINESS DASHBOARD GENERATION
+    # Save this new business idea to the user's memory session!
+    active_sessions[username] = user_message
 
     try:
         res = advise_structured(
