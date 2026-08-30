@@ -14,37 +14,25 @@
 
     <!-- Quick Stats Grid -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 32px 0;">
-        <div
-            style="background: rgba(255, 255, 255, 0.7); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px;">
-            <div
-                style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">
-                MSME Data</div>
-            <div style="font-size: 1.8rem; font-weight: 800; color: var(--green); margin: 4px 0;">63,900+</div>
-            <div style="font-size: 0.85rem; color: var(--muted);">Registered local enterprises</div>
+        <div class="stat-card">
+            <div class="stat-label">MSME Data</div>
+            <div class="stat-value" style="color: var(--green);">63,900+</div>
+            <div class="stat-subtext">Registered local enterprises</div>
         </div>
-        <div
-            style="background: rgba(255, 255, 255, 0.7); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px;">
-            <div
-                style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">
-                Coverage</div>
-            <div style="font-size: 1.8rem; font-weight: 800; color: var(--coral); margin: 4px 0;">9 Talukas</div>
-            <div style="font-size: 0.85rem; color: var(--muted);">Kadi, Visnagar, Unjha & more</div>
+        <div class="stat-card">
+            <div class="stat-label">Coverage</div>
+            <div class="stat-value" style="color: var(--coral);">9 Talukas</div>
+            <div class="stat-subtext">Kadi, Visnagar, Unjha & more</div>
         </div>
-        <div
-            style="background: rgba(255, 255, 255, 0.7); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px;">
-            <div
-                style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">
-                Govt Schemes</div>
-            <div style="font-size: 1.8rem; font-weight: 800; color: var(--green); margin: 4px 0;">PMEGP / Mudra</div>
-            <div style="font-size: 0.85rem; color: var(--muted);">Subsidies up to 35%</div>
+        <div class="stat-card">
+            <div class="stat-label">Govt Schemes</div>
+            <div class="stat-value" style="color: var(--green);">PMEGP / Mudra</div>
+            <div class="stat-subtext">Subsidies up to 35%</div>
         </div>
-        <div
-            style="background: rgba(255, 255, 255, 0.7); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px;">
-            <div
-                style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">
-                Intelligence</div>
-            <div style="font-size: 1.8rem; font-weight: 800; color: var(--coral); margin: 4px 0;">GraphRAG</div>
-            <div style="font-size: 0.85rem; color: var(--muted);">Hyper-local advisory engine</div>
+        <div class="stat-card">
+            <div class="stat-label">Intelligence</div>
+            <div class="stat-value" style="color: var(--coral);">GraphRAG</div>
+            <div class="stat-subtext">Hyper-local advisory engine</div>
         </div>
     </div>
 
@@ -64,19 +52,19 @@
             <span class="panel-number">01</span>
             <h3>Instant Sector Blueprints</h3>
             <p>Select a pre-analyzed sector to test local saturation and financial subsidy opportunities in Mehsana:</p>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
                 <a href="{{ url_for('chat') }}?prompt=Dairy+processing+unit+in+Kadi"
-                    style="text-decoration: none; padding: 8px 12px; background: rgba(30, 101, 82, 0.08); border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--green); display: flex; justify-content: space-between; align-items: center;">
+                    style="text-decoration: none; padding: 12px 16px; background: var(--sector-bg); border: 1px solid var(--line); border-radius: 8px; font-size: 0.88rem; font-weight: 600; color: var(--green); display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease;">
                     <span>🥛 Dairy Processing in Kadi</span>
                     <span>→</span>
                 </a>
                 <a href="{{ url_for('chat') }}?prompt=Textile+weaving+business+in+Visnagar"
-                    style="text-decoration: none; padding: 8px 12px; background: rgba(231, 127, 96, 0.08); border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--coral); display: flex; justify-content: space-between; align-items: center;">
+                    style="text-decoration: none; padding: 12px 16px; background: var(--sector-bg); border: 1px solid var(--line); border-radius: 8px; font-size: 0.88rem; font-weight: 600; color: var(--coral); display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease;">
                     <span>🧵 Textile & Weaving in Visnagar</span>
                     <span>→</span>
                 </a>
                 <a href="{{ url_for('chat') }}?prompt=Spice+and+flour+mill+in+Unjha"
-                    style="text-decoration: none; padding: 8px 12px; background: rgba(30, 101, 82, 0.08); border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--green); display: flex; justify-content: space-between; align-items: center;">
+                    style="text-decoration: none; padding: 12px 16px; background: var(--sector-bg); border: 1px solid var(--line); border-radius: 8px; font-size: 0.88rem; font-weight: 600; color: var(--green); display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease;">
                     <span>🌶️ Food Processing in Unjha</span>
                     <span>→</span>
                 </a>

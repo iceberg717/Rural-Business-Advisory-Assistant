@@ -19,7 +19,7 @@ for path in [BACKEND_DIR, DATABASE_DIR, BASE_DIR]:
     if path not in sys.path:
         sys.path.insert(0, path)
 
-from backend.advisory_assistant import advise, MEHSANA_TALUKAS
+from backend.advisory_assistant import advise, advise_structured, MEHSANA_TALUKAS
 from backend.gemini_integration import gemini_call
 from database.user_manager import (
     register_user, 
@@ -43,6 +43,7 @@ templates = Jinja2Templates(directory="templates")
 class ChatPayload(BaseModel):
     message: str
     taluka: Optional[str] = None
+    investment: Optional[str] = None
 
 
 def get_current_user(request: Request) -> Optional[dict]:
@@ -109,7 +110,7 @@ async def serve_login(
         request=request, 
         name="accounts/login.html", 
         context={
-            "request": request,
+            "request": request, 
             "next_url": next or "",
             "user": None
         }
@@ -170,7 +171,7 @@ async def serve_register(
         request=request, 
         name="accounts/register.html", 
         context={
-            "request": request,
+            "request": request, 
             "next_url": next or "",
             "user": None
         }
@@ -234,7 +235,7 @@ async def handle_logout():
 async def chat_api(request: Request, payload: ChatPayload):
     """
     Main Chat API Endpoint.
-    Requires logged in user.
+    Requires logged in user. Returns structured JSON with status, missing fields, or advisory report.
     """
     user = get_current_user(request)
     if not user:
@@ -250,31 +251,33 @@ async def chat_api(request: Request, payload: ChatPayload):
     if not user_message:
         return JSONResponse(
             status_code=400,
-            content={"reply": "Please provide a valid question or business idea."}
+            content={"reply": "Please provide a valid question or business idea.", "status": "error"}
         )
 
     try:
-        reply = advise(
+        res = advise_structured(
             user_text=user_message,
             taluka=payload.taluka,
+            investment=payload.investment,
             use_llm=True,
             api_call_fn=gemini_call
         )
-        return {"reply": reply, "status": "success"}
+        return res
     except Exception as e:
         print(f"Error in chat_api endpoint: {e}")
         try:
-            fallback_reply = advise(
+            fallback_res = advise_structured(
                 user_text=user_message,
                 taluka=payload.taluka,
+                investment=payload.investment,
                 use_llm=False
             )
-            return {"reply": fallback_reply, "status": "fallback"}
+            return fallback_res
         except Exception as inner_e:
             return JSONResponse(
                 status_code=500,
-                content={"reply": f"An error occurred while generating business advice: {str(inner_e)}"}
-            )
+                content={"reply": f"An error occurred while generating business advice: {str(inner_e)}", "status": "error"}
+            )  
 
 
 @app.get("/api/talukas", name="get_talukas")
