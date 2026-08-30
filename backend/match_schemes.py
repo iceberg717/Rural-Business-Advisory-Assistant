@@ -1,11 +1,18 @@
-"""Match real government schemes to a business type, using the graph's SUITED_FOR edges."""
+import os
 import pickle
 
-with open("mehsana_graph.pkl", "rb") as f:
-    G = pickle.load(f)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+GRAPH_PATH = os.path.join(CURRENT_DIR, "mehsana_graph.pkl")
+
+G = None
+if os.path.exists(GRAPH_PATH):
+    with open(GRAPH_PATH, "rb") as f:
+        G = pickle.load(f)
 
 
 def match_schemes(business_type):
+    if G is None:
+        return []
     business_type_l = business_type.lower().strip()
     matches = []
     for n, d in G.nodes(data=True):

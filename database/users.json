@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "username": "RameshPatel",
+    "email": "ramesh@dairy.in",
+    "password_hash": "60c9a409c60807c140a1f90a906912c6baf30786041b67b2f009ebe831a898cf",
+    "salt": "0605f15c1a080e4c932ca97ebc418278",
+    "created_at": "2026-08-30T06:44:48.577795Z"
+  },
+  {
+    "id": 2,
+    "username": "henil",
+    "email": "abc@gmail.com",
+    "password_hash": "5e5f2154b12ef70a0a4e8f08b92cb3b7cb6df23582686499777ee72eb4718fe0",
+    "salt": "720182dba0790688344f29a68a1de0a8",
+    "created_at": "2026-08-30T06:47:38.962470Z"
+  }
+]

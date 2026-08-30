@@ -9,14 +9,14 @@ Two-layer approach:
      businesses that don't contain the exact keyword but are semantically close
      (e.g. "milk product retail", "ghee trading") — a discovery layer.
 """
+import os
 import csv
-import chromadb
-from sentence_transformers import SentenceTransformer
 
-# Load model & client
-client = chromadb.PersistentClient(path="./mehsana_vectordb")
-collection = client.get_or_create_collection(name="mehsana_rag", metadata={"hnsw:space": "cosine"})
-model = SentenceTransformer("all-MiniLM-L6-v2")
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+MSME_CSV_PATH = os.path.join(CURRENT_DIR, "msme_clean.csv")
+VECTORDB_PATH = os.path.join(CURRENT_DIR, "mehsana_vectordb")
 
 # business type -> keywords to match in activity_descriptions (extend as needed)
 CATEGORY_KEYWORDS = {
@@ -30,55 +30,85 @@ CATEGORY_KEYWORDS = {
     "agri-business": ["seed", "fertilizer", "agri", "farming", "pesticide", "mandi"],
 }
 
+_MSME_ROWS = None
+_chroma_collection = None
+_st_model = None
 
-def load_msme():
-    with open("msme_clean.csv", mode="r", encoding="utf-8", errors="replace") as f:
-        return list(csv.DictReader(f))
+def get_msme_rows():
+    global _MSME_ROWS
+    if _MSME_ROWS is None:
+        if os.path.exists(MSME_CSV_PATH):
+            with open(MSME_CSV_PATH, mode="r", encoding="utf-8", errors="replace") as f:
+                _MSME_ROWS = list(csv.DictReader(f))
+        else:
+            _MSME_ROWS = []
+    return _MSME_ROWS
+
+def get_vector_resources():
+    global _chroma_collection, _st_model
+    if _chroma_collection is None and os.path.exists(VECTORDB_PATH):
+        try:
+            import chromadb
+            client = chromadb.PersistentClient(path=VECTORDB_PATH)
+            _chroma_collection = client.get_or_create_collection(name="mehsana_rag", metadata={"hnsw:space": "cosine"})
+        except Exception:
+            _chroma_collection = None
+
+    if _st_model is None:
+        try:
+            from sentence_transformers import SentenceTransformer
+            _st_model = SentenceTransformer("all-MiniLM-L6-v2")
+        except Exception:
+            _st_model = None
+
+    return _chroma_collection, _st_model
 
 
-_MSME_ROWS = load_msme()
-
-
-def shortlist_competitors(business_type, taluka=None, top_n=10):
+def shortlist_competitors(business_type, taluka=None, top_n=10, enable_vector=False):
     business_type_l = business_type.lower().strip()
     keywords = CATEGORY_KEYWORDS.get(business_type_l)
     if not keywords:
         # fall back: treat the business_type itself as the keyword
         keywords = [business_type_l]
 
-    # ---- Layer 1: keyword filter (the hard shortlist) ----
+    msme_rows = get_msme_rows()
+
+    # ---- Layer 1: keyword filter (the fast, hard shortlist) ----
     exact_matches = []
-    for r in _MSME_ROWS:
-        if taluka and r.get("taluka", "").lower() != taluka.lower():
+    for r in msme_rows:
+        if taluka and r.get("taluka", "").strip().lower() != taluka.strip().lower():
             continue
         desc = r.get("activity_descriptions", "").lower()
         if any(kw in desc for kw in keywords):
             exact_matches.append(r)
 
-    # ---- Layer 2: vector similarity (related/adjacent businesses) ----
-    query_text = f"{business_type} business activities"
-    vec = model.encode([query_text]).tolist()
-    where_filter = {"source": "msme"}
-    if taluka:
-        where_filter = {"$and": [{"source": "msme"}, {"taluka": taluka}]}
+    # ---- Layer 2: vector similarity (optional discovery layer) ----
+    related = []
+    if enable_vector:
+        try:
+            collection, model = get_vector_resources()
+            if collection is not None and model is not None:
+                query_text = f"{business_type} business activities"
+                vec = model.encode([query_text]).tolist()
+                where_filter = {"source": "msme"}
+                if taluka:
+                    where_filter = {"$and": [{"source": "msme"}, {"taluka": taluka}]}
 
-    try:
-        res = collection.query(query_embeddings=vec, n_results=top_n * 3, where=where_filter)
-        exact_names = {r["enterprise_name"] for r in exact_matches}
-        related = []
-        for doc, meta, dist in zip(res["documents"][0], res["metadatas"][0], res["distances"][0]):
-            name_line = doc.split(",")[0].replace("Enterprise: ", "")
-            if name_line in exact_names:
-                continue
-            related.append((doc, dist))
-    except Exception:
-        related = []
+                res = collection.query(query_embeddings=vec, n_results=top_n * 3, where=where_filter)
+                exact_names = {r["enterprise_name"] for r in exact_matches}
+                for doc, meta, dist in zip(res["documents"][0], res["metadatas"][0], res["distances"][0]):
+                    name_line = doc.split(",")[0].replace("Enterprise: ", "")
+                    if name_line in exact_names:
+                        continue
+                    related.append((doc, dist))
+        except Exception:
+            related = []
 
     return exact_matches, related[:5]
 
 
 def print_shortlist(business_type, taluka=None):
-    exact, related = shortlist_competitors(business_type, taluka)
+    exact, related = shortlist_competitors(business_type, taluka, enable_vector=True)
     print(f"\n=== Competitor shortlist: '{business_type}' businesses in {taluka or 'all talukas'} ===")
     print(f"\nEXACT MATCHES (keyword filter — the real shortlist): {len(exact)} found")
     for r in exact[:15]:

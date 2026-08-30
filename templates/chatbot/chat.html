@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}AI Business Advisor | RuralBiz Advisor{% endblock %}
+{% block content %}
+<section class="chat-shell">
+    <div class="chat-heading">
+        <div>
+            <p class="eyebrow">HYPER-LOCAL ADVISORY AGENT</p>
+            <h1>Mehsana Business Advisor</h1>
+            <p class="muted" style="margin-top: -6px; margin-bottom: 12px; font-size: 0.95rem;">
+                Powered by 63,900+ registered MSME records, government loan schemes, and agricultural market
+                intelligence.
+            </p>
+        </div>
+        <span class="mock-label"
+            style="background: rgba(30, 101, 82, 0.12); color: var(--green); border: 1px solid rgba(30, 101, 82, 0.25); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
+            ● RAG & GRAPH ACTIVE
+        </span>
+    </div>
+
+    <!-- Quick Prompt Suggestions -->
+    <div class="suggestion-bar" style="margin-bottom: 20px;">
+        <div
+            style="font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">
+            Suggested Inquiries:
+        </div>
+        <div class="suggestion-chips" style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <button type="button" class="suggestion-chip" data-query="I want to start a dairy shop in Kadi">
+                🥛 Dairy shop in Kadi
+            </button>
+            <button type="button" class="suggestion-chip" data-query="Textile weaving business in Visnagar">
+                🧵 Textile in Visnagar
+            </button>
+            <button type="button" class="suggestion-chip" data-query="Spice processing and flour mill in Unjha">
+                🌶️ Spice unit in Unjha
+            </button>
+            <button type="button" class="suggestion-chip" data-query="Retail kirana and grocery store in Kheralu">
+                🛒 Retail in Kheralu
+            </button>
+            <button type="button" class="suggestion-chip"
+                data-query="What government subsidy schemes are available for rural entrepreneurs?">
+                🏛️ Govt Subsidy Schemes
+            </button>
+            <button type="button" class="suggestion-chip"
+                data-query="What are the market prices and crops in Vadnagar?">
+                🌾 Crops & Market in Vadnagar
+            </button>
+        </div>
+    </div>
+
+    <div class="chat-panel">
+        <div id="message-list" class="message-list" aria-live="polite">
+            {% if not messages %}
+            <div class="empty-chat" id="empty-chat-placeholder">
+                <span class="empty-icon">💡</span>
+                <h2>What business are you planning?</h2>
+                <p>Type your business idea and Mehsana taluka (e.g. <em>"Dairy processing in Kadi"</em> or <em>"Textile
+                        unit in Visnagar"</em>) to get competitive density, registered peers, applicable loan subsidies,
+                    and local supply chain context.</p>
+            </div>
+            {% endif %}
+            {% for message in messages %}
+            <div class="message {{ message.role }}">
+                <span class="message-label">{% if message.role == 'user' %}You{% else %}Advisor{% endif %}</span>
+                <div class="message-body">{{ message.content|safe }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form id="chat-form" class="chat-form" data-send-url="{{ url_for('chat_api') }}" method="post">
+            <input id="chat-input" name="message" autocomplete="off"
+                placeholder="Ask e.g. 'Dairy business in Kadi' or 'Government schemes for food processing'..."
+                aria-label="Message" required>
+            <button class="send-button" type="submit" id="btn-chat-send">
+                <span>Send</span>
+                <span aria-hidden="true">-&gt;</span>
+            </button>
+        </form>
+        <div id="chat-status" class="chat-status" role="status"
+            style="margin-top: 10px; font-size: 0.85rem; color: var(--muted); display: none;"></div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Log in | RuralBiz Advisor{% endblock %}
+{% block content %}
+<section class="auth-layout single-auth">
+    <div class="auth-intro">
+        <p class="eyebrow">WELCOME BACK</p>
+        <h1>Your business questions, one clear next step.</h1>
+        <p>Sign in to access your AI Advisor conversations and hyper-local Mehsana market reports.</p>
+    </div>
+    <form class="form-panel" method="post" action="{{ url_for('login_post') }}{% if next_url %}?next={{ next_url }}{% endif %}">
+        <h2>Log in</h2>
+        {% if error %}
+            <div class="form-errors" style="background: rgba(231, 127, 96, 0.15); border: 1px solid var(--coral); padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-weight: 600; color: #ae4935;">
+                {{ error }}
+            </div>
+        {% endif %}
+        {% if success_msg %}
+            <div style="background: rgba(30, 101, 82, 0.12); border: 1px solid var(--green); color: var(--green); padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-weight: 600; font-size: 0.85rem;">
+                {{ success_msg }}
+            </div>
+        {% endif %}
+        <label>Username or Email 
+            <input type="text" name="username" value="{{ username or '' }}" required autocomplete="username" placeholder="Enter your username or email">
+        </label>
+        <label>Password 
+            <input type="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+        </label>
+        <button class="primary-button" type="submit" id="btn-login-submit">Log in to Advisor</button>
+        <p class="form-footer">New here? <a href="{{ url_for('register') }}{% if next_url %}?next={{ next_url }}{% endif %}">Create an account</a></p>
+    </form>
+</section>
+{% endblock %}

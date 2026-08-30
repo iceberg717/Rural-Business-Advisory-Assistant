@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Create Account | RuralBiz Advisor{% endblock %}
+{% block content %}
+<section class="auth-layout">
+    <div class="auth-intro">
+        <p class="eyebrow">SIH 2026 / 26091</p>
+        <h1>Build your next business decision with confidence.</h1>
+        <p>A practical home for rural entrepreneurs in Mehsana to ask, plan, and grow.</p>
+    </div>
+    <form class="form-panel" method="post" action="{{ url_for('register_post') }}{% if next_url %}?next={{ next_url }}{% endif %}">
+        <h2>Create your account</h2>
+        <p class="muted">Start your private workspace for MSME market intelligence and advisor consultations.</p>
+        {% if error %}
+            <div class="form-errors" style="background: rgba(231, 127, 96, 0.15); border: 1px solid var(--coral); padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-weight: 600; color: #ae4935;">
+                {{ error }}
+            </div>
+        {% endif %}
+        <label>Username 
+            <input type="text" name="username" value="{{ username or '' }}" required autocomplete="username" placeholder="e.g. PatelDairy">
+        </label>
+        <label>Email Address
+            <input type="email" name="email" value="{{ email or '' }}" required autocomplete="email" placeholder="e.g. entrepreneur@ruralbiz.in">
+        </label>
+        <label>Password 
+            <input type="password" name="password" required autocomplete="new-password" placeholder="Choose a password (min. 4 characters)">
+        </label>
+        <button class="primary-button" type="submit" id="btn-register-submit">Create Account &amp; Continue</button>
+        <p class="form-footer">Already registered? <a href="{{ url_for('login') }}{% if next_url %}?next={{ next_url }}{% endif %}">Log in</a></p>
+    </form>
+</section>
+{% endblock %}

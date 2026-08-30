@@ -1,4 +1,8 @@
+import os
 import csv
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+MSME_CSV_PATH = os.path.join(CURRENT_DIR, "msme_clean.csv")
 
 def fetch_msme_competitors(business_category, taluka_name, max_results=10):
     """
@@ -18,7 +22,9 @@ def fetch_msme_competitors(business_category, taluka_name, max_results=10):
     keywords = category_keywords.get(business_category.lower(), [business_category.lower()])
     
     matches = []
-    with open("msme_clean.csv", mode="r", encoding="utf-8", errors="replace") as f:
+    if not os.path.exists(MSME_CSV_PATH):
+        return []
+    with open(MSME_CSV_PATH, mode="r", encoding="utf-8", errors="replace") as f:
         reader = csv.DictReader(f)
         for row in reader:
             # Check taluka match (case-insensitive)

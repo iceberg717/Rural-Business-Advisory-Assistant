@@ -3,30 +3,66 @@ Business Advisory Assistant — orchestrates schemes + competitors + market
 context into one advisory report, given a business idea + location.
 
 Two modes:
-  - TEMPLATE mode (default, works now, free, no API needed): assembles real
-    data into a structured, readable report using Python string templates.
-  - LLM mode (stub — wire in your own API key when deploying for real):
-    same assembled context, but sent to an LLM for a more natural,
-    conversational write-up. See generate_with_llm() below for the swap-in point.
+  - TEMPLATE mode (default, works offline, free, no API needed): assembles real
+    data from local MSME database, knowledge graph, and scheme records into a structured, readable report.
+  - LLM mode (Google Gemini): sends the assembled hyper-local context to Gemini
+    with automatic fallback to Template mode if API keys or network are unavailable.
 """
-from match_schemes import match_schemes
-from shortlist_competitors import shortlist_competitors, CATEGORY_KEYWORDS
-from geoapify_integration import fetch_live_competitors_from_geoapify
-
+import os
+import sys
 import pickle
-with open("mehsana_graph.pkl", "rb") as f:
-    G = pickle.load(f)
+import re
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
+try:
+    from match_schemes import match_schemes
+    from shortlist_competitors import shortlist_competitors, CATEGORY_KEYWORDS
+    from geoapify_integration import fetch_live_competitors_from_geoapify
+except ImportError:
+    from backend.match_schemes import match_schemes
+    from backend.shortlist_competitors import shortlist_competitors, CATEGORY_KEYWORDS
+    from backend.geoapify_integration import fetch_live_competitors_from_geoapify
+
+GRAPH_PATH = os.path.join(CURRENT_DIR, "mehsana_graph.pkl")
+G = None
+if os.path.exists(GRAPH_PATH):
+    try:
+        with open(GRAPH_PATH, "rb") as f:
+            G = pickle.load(f)
+    except Exception as e:
+        print(f"Warning: Failed to load graph from {GRAPH_PATH}: {e}")
+
+MEHSANA_TALUKAS = [
+    "Becharaji", "Kadi", "Kheralu", "Mahesana", "Satlasana", "Unjha", "Vadnagar", "Vijapur", "Visnagar"
+]
+
+def extract_taluka(user_text: str):
+    """Extract known Mehsana taluka from user input string."""
+    if not user_text:
+        return None
+    text_l = user_text.lower()
+    for t in MEHSANA_TALUKAS:
+        # Match 'mehsana' or 'mahesana'
+        if t.lower() in text_l:
+            return t
+        if t.lower() == "mahesana" and "mehsana" in text_l:
+            return "Mahesana"
+    return None
 
 def get_fallback_competitors(business_type, taluka):
     """Try Geoapify live search if local MSME data returns nothing."""
-    live_results = fetch_live_competitors_from_geoapify(business_type, taluka)
-    
-    if live_results:
-        return [
-            f"{c['enterprise_name']} (Address: {c['address']})"
-            for c in live_results
-        ]
+    try:
+        live_results = fetch_live_competitors_from_geoapify(business_type, taluka)
+        if live_results:
+            return [
+                f"{c['enterprise_name']} (Address: {c['address']})"
+                for c in live_results
+            ]
+    except Exception:
+        pass
     return ["(No live map results found for this specific niche category)"]
 
 
@@ -46,6 +82,8 @@ def extract_business_type(user_text):
 def get_crop_context(taluka):
     """Pull crops grown in this taluka from the graph, in case it's relevant
     (e.g. dairy/food-processing businesses benefit from knowing local crop supply)."""
+    if G is None:
+        return []
     tid = f"taluka::{taluka.lower()}"
     if tid not in G:
         return []
@@ -60,16 +98,23 @@ def get_crop_context(taluka):
 
 
 def build_advisory_context(user_text, taluka=None):
-    """Gather all the raw facts needed for the report. This is what you'd
-    hand to an LLM if using LLM mode, or feed to the template below."""
+    """Gather all the raw facts needed for the report."""
+    if not taluka:
+        taluka = extract_taluka(user_text)
+
     business_type = extract_business_type(user_text)
     
-    # FIX: If we can't extract a known category, use the exact words the user typed
+    # If we can't extract a known category, clean the user input as business idea
     if not business_type:
-        business_type = user_text.strip()
+        cleaned = re.sub(r"\b(in|at|for|near|of)\s+[A-Za-z]+", "", user_text, flags=re.IGNORECASE).strip()
+        business_type = cleaned if cleaned else user_text.strip()
         
     if not taluka:
-        return {"error": "no_location", "business_type": business_type}
+        return {
+            "error": "no_location",
+            "business_type": business_type,
+            "available_talukas": MEHSANA_TALUKAS
+        }
 
     schemes = match_schemes(business_type)
     exact_competitors, related_competitors = shortlist_competitors(business_type, taluka=taluka)
@@ -78,12 +123,11 @@ def build_advisory_context(user_text, taluka=None):
     # --- GEOAPIFY FALLBACK LOGIC ---
     if len(exact_competitors) > 0:
         competitor_list = [
-            f"{c['enterprise_name']} ({c['activity_descriptions'][:60]})" 
+            f"{c['enterprise_name']} ({c.get('activity_descriptions', '')[:60]})" 
             for c in exact_competitors[:5]
         ]
         competitor_count = len(exact_competitors)
     else:
-        # Zero local records found -> Switch to Geoapify Live Maps search!
         competitor_list = get_fallback_competitors(business_type, taluka)
         competitor_count = len(competitor_list) if competitor_list and competitor_list[0] != "(No live map results found for this specific niche category)" else 0
 
@@ -98,96 +142,118 @@ def build_advisory_context(user_text, taluka=None):
 
 
 def generate_template_report(ctx):
-    """Deterministic, no-LLM report generation from the assembled context."""
+    """Deterministic, local report generation from the assembled context."""
     if "error" in ctx:
         if ctx["error"] == "no_location":
-            return (f"I identified this as a **{ctx['business_type']}** business idea, "
-                     f"but I need to know which taluka you're planning it in (e.g. Kadi, "
-                     f"Unjha, Visnagar, Kheralu...) to check local competition and applicable schemes.")
+            taluka_list_str = ", ".join(MEHSANA_TALUKAS)
+            return (
+                f"### Business Idea: **{ctx['business_type'].title()}**\n\n"
+                f"To provide you with local competitor intelligence and applicable government schemes, "
+                f"please specify your target **Taluka** in Mehsana district.\n\n"
+                f"📍 **Available Talukas:** {taluka_list_str}\n\n"
+                f"*Example:* `I want to start a {ctx['business_type']} business in Kadi`"
+            )
         return ctx["error"]
 
     bt, taluka = ctx["business_type"], ctx["taluka"]
-    lines = [f"## Business Advisory: {bt.title()} business in {taluka} taluka\n"]
+    lines = [f"## 📊 Business Advisory: {bt.title()} in {taluka} Taluka\n"]
 
     # competition
     n = ctx["competitor_count"]
     if n == 0:
-        lines.append(f"**Competition:** No existing {bt} businesses found in {taluka} in our registered "
-                      f"MSME data — this could mean low competition, or an underserved area worth validating further.\n")
+        lines.append(f"### 🏢 Market Competition Analysis\n"
+                     f"- **Status:** Low competition detected.\n"
+                     f"- No registered {bt} MSMEs currently recorded in **{taluka}** taluka. This indicates an open market opportunity or an underserved niche worth validating with local foot traffic.\n")
     elif n < 20:
-        lines.append(f"**Competition:** {n} existing {bt} businesses registered in {taluka} — "
-                      f"moderate competition. Worth differentiating on location, product range, or price.\n")
+        lines.append(f"### 🏢 Market Competition Analysis\n"
+                     f"- **Status:** Moderate Competition ({n} registered businesses in {taluka}).\n"
+                     f"- There is healthy market demand with room for differentiation on pricing, product quality, or strategic sub-village location.\n")
     else:
-        lines.append(f"**Competition:** {n} existing {bt} businesses already registered in {taluka} — "
-                      f"this market looks saturated. Consider a niche angle or a different taluka.\n")
-    if ctx["sample_competitors"]:
-        lines.append("Sample existing competitors:")
+        lines.append(f"### 🏢 Market Competition Analysis\n"
+                     f"- **Status:** High Competition / Saturated ({n} registered businesses in {taluka}).\n"
+                     f"- High density of existing players. We recommend focusing on value-added services, unique supply chains, or targeting adjacent underserved villages.\n")
+
+    if ctx.get("sample_competitors"):
+        lines.append("**Sample Existing Enterprises in this Taluka:**")
         for c in ctx["sample_competitors"]:
-            lines.append(f"  - {c}")
+            lines.append(f"- {c}")
         lines.append("")
 
     # schemes
+    lines.append("### 🏛️ Government Schemes & Financial Support")
     if ctx["schemes"]:
-        lines.append(f"**Applicable government schemes ({len(ctx['schemes'])} found):**")
+        lines.append(f"Found **{len(ctx['schemes'])} applicable government schemes** for your business profile:\n")
         for s in ctx["schemes"]:
-            verified = "✓" if "Verified" in s.get("verification", "") else "⚠ needs verification"
-            lines.append(f"  - {s['name']}: max loan {s['max_loan']}, interest {s['interest_rate']}, "
-                          f"subsidy {s['subsidy']} [{verified}]")
+            verified = "✅ Verified" if "Verified" in s.get("verification", "") else "ℹ️ Available"
+            lines.append(f"- **{s['name']}** ({s.get('scheme_id', 'Govt Scheme')}):")
+            lines.append(f"  - **Max Loan:** {s.get('max_loan', 'As per guideline')}")
+            lines.append(f"  - **Interest Rate:** {s.get('interest_rate', 'Subsidized')}")
+            lines.append(f"  - **Subsidy:** {s.get('subsidy', 'Applicable')} ({verified})")
+            if s.get("target_group"):
+                lines.append(f"  - **Target Group:** {s.get('target_group')}")
         lines.append("")
     else:
-        lines.append("**Applicable government schemes:** none of the 7 tracked schemes matched this "
-                      "category directly — worth checking district DIC office for other options.\n")
+        lines.append("- No category-specific scheme directly mapped in our primary catalog. "
+                     "However, standard MSME / PMEGP and Mudra loans apply universally through the District Industries Centre (DIC) Mehsana.\n")
 
     # crop context (only if relevant)
-    if ctx["local_crops"] and bt in ("dairy", "food processing", "agri-business"):
-        lines.append(f"**Local raw material context:** {taluka} villages grow: "
-                      f"{', '.join(ctx['local_crops'][:8])} — relevant for sourcing if applicable.\n")
+    if ctx.get("local_crops"):
+        lines.append("### 🌾 Local Agricultural & Raw Material Context")
+        crops_str = ", ".join(ctx["local_crops"][:10])
+        lines.append(f"- Key local crops in **{taluka}**: {crops_str}.")
+        lines.append("- Potential advantage: direct farm-gate raw material sourcing reduces transport overhead.\n")
+
+    lines.append("### 💡 Recommended Next Steps")
+    lines.append("1. Validate local customer footfall in the commercial market of your chosen village/taluka.")
+    lines.append("2. Apply for Udyam Registration (free online MSME certification).")
+    lines.append("3. Approach your local nationalized bank or DIC office with your project report to apply for the listed subsidy scheme.")
 
     return "\n".join(lines)
 
 
 def generate_with_llm(ctx, api_call_fn=None):
     if api_call_fn is None:
-        from advisory_assistant import generate_template_report
         return generate_template_report(ctx)
         
-    # Format the sample competitors clearly for the LLM
     competitor_list_str = "\n".join([f"  - {c}" for c in ctx.get('sample_competitors', [])])
     if not competitor_list_str:
         competitor_list_str = "  (No specific exact matches found)"
 
     prompt = f"""You are a hyper-local business advisory assistant for rural entrepreneurs
-in Mehsana district, Gujarat. Write a practical, professional advisory report.
+in Mehsana district, Gujarat. Write a practical, professional advisory report formatted in clean Markdown.
 
 Business type: {ctx.get('business_type')}
-Location: {ctx.get('taluka')} taluka
+Location: {ctx.get('taluka')} taluka, Mehsana District
 Total registered competitors in this taluka: {ctx.get('competitor_count')}
-List of actual local competitors from MSME database or live maps:
+List of actual local competitors from MSME database:
 {competitor_list_str}
 
 Applicable government schemes & loans: {ctx.get('schemes')}
 Locally grown crops/raw materials: {ctx.get('local_crops')}
 
-In your response, you MUST explicitly:
-1. State the exact number of local competitors in {ctx.get('taluka')} taluka.
-2. List out at least 3-5 specific competitor enterprise names and their activities/addresses from the provided list above so the user knows who is operating nearby.
-3. Give an honest read on market saturation.
-4. Recommend the best-fit government scheme with loan and subsidy numbers.
-5. Provide a concrete differentiation strategy."""
+Provide a structured, encouraging, and highly specific advisory response:
+1. Executive Summary & Market Saturation Assessment in {ctx.get('taluka')}.
+2. Local Competition Snapshot (mentioning 3-5 existing registered business names).
+3. Recommended Government Scheme with Loan Amount & Subsidy details.
+4. Strategic Differentiation & Actionable Next Steps."""
 
-    return api_call_fn(prompt)
+    try:
+        return api_call_fn(prompt)
+    except Exception as e:
+        print(f"LLM generation failed ({e}), falling back to local template report.")
+        return generate_template_report(ctx)
 
 
-def advise(user_text, taluka=None, use_llm=False, api_call_fn=None):
+def advise(user_text: str, taluka: str = None, use_llm: bool = True, api_call_fn = None):
     ctx = build_advisory_context(user_text, taluka)
-    if use_llm:
+    if "error" in ctx:
+        return generate_template_report(ctx)
+
+    if use_llm and api_call_fn:
         return generate_with_llm(ctx, api_call_fn)
+        
     return generate_template_report(ctx)
 
 
 if __name__ == "__main__":
-    print(advise("give me idea for my textile business"))
-    print("\n" + "=" * 70 + "\n")
-    print(advise("give me idea for my textile business", taluka="Visnagar"))
-    print("\n" + "=" * 70 + "\n")
-    print(advise("thinking of starting a dairy shop", taluka="Kheralu"))
+    print(advise("give me idea for my textile business in Visnagar"))
