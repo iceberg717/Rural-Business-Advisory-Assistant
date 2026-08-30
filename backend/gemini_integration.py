@@ -1,89 +1,65 @@
 """
-Real LLM generation using Google Gemini with dynamic interactive input.
+LLM generation using Google Gemini API with graceful error handling and fallbacks.
 """
 import os
 import json
 import urllib.request
 import urllib.error
+from dotenv import load_dotenv
 
-api_key = os.environ.get("GEMINI_API_KEY")
-if not api_key:
-    raise RuntimeError(
-        "Set the GEMINI_API_KEY environment variable before running this.\n"
-        "Windows (CMD):        set GEMINI_API_KEY=your_key_here\n"
-        "Windows (PowerShell): $env:GEMINI_API_KEY=\"your_key_here\"\n"
-        "Linux/Mac:            export GEMINI_API_KEY=\"your_key_here\""
-    )
+# Load .env file from project root or current directory
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+load_dotenv(os.path.join(CURRENT_DIR, ".env"))
 
-def gemini_call(prompt: str) -> str:
-    """Calls Gemini via direct REST API using the recommended gemini-3.6-flash model."""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={api_key}"
-    payload = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": prompt}
-                ]
-            }
-        ]
-    }
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=data,
-        headers={"Content-Type": "application/json"}
-    )
-    
-    try:
-        with urllib.request.urlopen(req) as response:
-            res_data = json.loads(response.read().decode("utf-8"))
-            text = res_data["candidates"][0]["content"]["parts"][0]["text"]
-            return text
-    except urllib.error.HTTPError as e:
-        err_msg = e.read().decode("utf-8")
-        raise RuntimeError(f"Gemini API Error ({e.code}): {err_msg}")
+def get_gemini_api_key():
+    return os.environ.get("GEMINI_API_KEY", "").strip()
 
+def gemini_call(prompt: str, model_name: str = "gemini-1.5-flash") -> str:
+    """
+    Calls Gemini REST API. If the API call fails or key is missing/invalid,
+    raises RuntimeError with details so caller can fall back.
+    """
+    api_key = get_gemini_api_key()
+    if not api_key:
+        raise RuntimeError("GEMINI_API_KEY is not configured.")
 
-if __name__ == "__main__":
-    from advisory_assistant import advise
+    models_to_try = [model_name, "gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]
+    # De-duplicate while preserving order
+    models_to_try = list(dict.fromkeys(models_to_try))
 
-    print("Rural Business Advisory Assistant (Interactive Gemini Mode)")
-    print("Available Talukas in Mehsana: Kheralu, Vadnagar, Becharaji, Satlasana, Visnagar, Unjha, Vijapur, Kadi, Mahesana")
-    print("=" * 75 + "\n")
+    last_error = None
+    for model in models_to_try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": prompt}
+                    ]
+                }
+            ]
+        }
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"}
+        )
 
-    while True:
         try:
-            user_idea = input("Enter your business idea (e.g. 'organic fertilizer unit', 'dairy processing'): ").strip()
-            if not user_idea:
-                print("Please enter a valid business idea.")
-                continue
-            if user_idea.lower() in ("exit", "quit"):
-                print("Exiting. Goodbye!")
+            with urllib.request.urlopen(req, timeout=15) as response:
+                res_data = json.loads(response.read().decode("utf-8"))
+                text = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                return text
+        except urllib.error.HTTPError as e:
+            err_msg = e.read().decode("utf-8", errors="replace")
+            last_error = f"Gemini API Error ({e.code}) on {model}: {err_msg}"
+            # If 401 unauthorized, trying other models won't help with bad key
+            if e.code == 401:
                 break
-                
-            user_taluka = input("Enter Mehsana taluka (e.g. Visnagar, Kheralu, Kadi, Unjha): ").strip()
-            if not user_taluka:
-                print("Please enter a valid taluka.")
-                continue
-
-            print("\nGenerating advisory report with Gemini... Please wait.\n")
-            report = advise(
-                user_idea,
-                taluka=user_taluka,
-                use_llm=True,
-                api_call_fn=gemini_call,
-            )
-            print("-" * 75)
-            print(report)
-            print("-" * 75 + "\n")
-            
-            cont = input("Would you like to try another query? (y/n): ").strip().lower()
-            if cont != 'y':
-                print("Exiting. Goodbye!")
-                break
-                
-        except KeyboardInterrupt:
-            print("\nExiting. Goodbye!")
-            break
         except Exception as e:
-            print(f"Error: {e}\n")
+            last_error = f"Network or API Error on {model}: {str(e)}"
+
+    raise RuntimeError(last_error or "Gemini API call failed.")
