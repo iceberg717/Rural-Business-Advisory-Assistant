@@ -12,8 +12,314 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/professional.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}?v=4.0">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/professional.css') }}?v=4.0">
+
+    <style id="ruralbiz-theme-rules">
+        /* Base transition */
+        html,
+        body,
+        .site-header,
+        .advisor-card,
+        .info-panel,
+        .chat-panel,
+        .form-panel,
+        .stat-card,
+        .message p,
+        input {
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        /* -------------------------------------------------------------
+           LIGHT MODE (Original Crisp White / Cream Palette)
+        ------------------------------------------------------------- */
+        html[data-theme="light"],
+        body[data-theme="light"],
+        html:not([data-theme="dark"]) body {
+            background-color: #f6f5ef !important;
+            color: #173b36 !important;
+        }
+
+        html[data-theme="light"] .site-header,
+        html:not([data-theme="dark"]) .site-header {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-bottom: 1px solid #dbe4de !important;
+        }
+
+        html[data-theme="light"] .brand,
+        html:not([data-theme="dark"]) .brand {
+            color: #173b36 !important;
+        }
+
+        html[data-theme="light"] .nav-links a,
+        html:not([data-theme="dark"]) .nav-links a {
+            color: #5e726d !important;
+        }
+
+        html[data-theme="light"] .theme-toggle-btn,
+        html:not([data-theme="dark"]) .theme-toggle-btn {
+            background: #dcefe4 !important;
+            border: 1px solid #dbe4de !important;
+            color: #173b36 !important;
+        }
+
+        html[data-theme="light"] .stat-card,
+        html:not([data-theme="dark"]) .stat-card {
+            background: #ffffff !important;
+            border: 1px solid #dbe4de !important;
+        }
+
+        html[data-theme="light"] .advisor-card,
+        html:not([data-theme="dark"]) .advisor-card {
+            background: #dcefe4 !important;
+            border: 1px solid #dbe4de !important;
+        }
+
+        html[data-theme="light"] .advisor-card h2,
+        html:not([data-theme="dark"]) .advisor-card h2 {
+            color: #173b36 !important;
+        }
+
+        html[data-theme="light"] .advisor-card p,
+        html:not([data-theme="dark"]) .advisor-card p {
+            color: #365b52 !important;
+        }
+
+        html[data-theme="light"] .info-panel,
+        html[data-theme="light"] .chat-panel,
+        html[data-theme="light"] .form-panel,
+        html:not([data-theme="dark"]) .info-panel,
+        html:not([data-theme="dark"]) .chat-panel,
+        html:not([data-theme="dark"]) .form-panel {
+            background: #ffffff !important;
+            border: 1px solid #dbe4de !important;
+            color: #173b36 !important;
+        }
+
+        html[data-theme="light"] .welcome-row h1,
+        html[data-theme="light"] .chat-heading h1,
+        html[data-theme="light"] .auth-intro h1,
+        html[data-theme="light"] .info-panel h3,
+        html[data-theme="light"] .form-panel h2,
+        html:not([data-theme="dark"]) .welcome-row h1,
+        html:not([data-theme="dark"]) .chat-heading h1,
+        html:not([data-theme="dark"]) .auth-intro h1,
+        html:not([data-theme="dark"]) .info-panel h3,
+        html:not([data-theme="dark"]) .form-panel h2 {
+            color: #173b36 !important;
+        }
+
+        html[data-theme="light"] .muted,
+        html[data-theme="light"] .stat-subtext,
+        html[data-theme="light"] .popup-subtext,
+        html:not([data-theme="dark"]) .muted,
+        html:not([data-theme="dark"]) .stat-subtext,
+        html:not([data-theme="dark"]) .popup-subtext {
+            color: #5e726d !important;
+        }
+
+        html[data-theme="light"] .chat-form,
+        html:not([data-theme="dark"]) .chat-form {
+            background: #ffffff !important;
+            border-top: 1px solid #dbe4de !important;
+        }
+
+        html[data-theme="light"] input,
+        html[data-theme="light"] textarea,
+        html:not([data-theme="dark"]) input,
+        html:not([data-theme="dark"]) textarea {
+            background: #ffffff !important;
+            color: #173b36 !important;
+            border: 1px solid #cfdcd4 !important;
+        }
+
+        html[data-theme="light"] .message p,
+        html:not([data-theme="dark"]) .message p {
+            background: #f3f5f0 !important;
+            color: #173b36 !important;
+            border: 1px solid #dbe4de !important;
+        }
+
+        html[data-theme="light"] .message.user p,
+        html:not([data-theme="dark"]) .message.user p {
+            background: #1e6552 !important;
+            color: #ffffff !important;
+            border: none !important;
+        }
+
+        /* -------------------------------------------------------------
+           DARK MODE (Deep Black & Midnight Charcoal Palette)
+        ------------------------------------------------------------- */
+        html[data-theme="dark"],
+        body[data-theme="dark"] {
+            background-color: #090a09 !important;
+            color: #f0f6f3 !important;
+        }
+
+        html[data-theme="dark"] body::before {
+            background:
+                radial-gradient(circle at 8% 0%, rgba(241, 146, 119, 0.05), transparent 27rem),
+                radial-gradient(circle at 92% 12%, rgba(47, 165, 132, 0.07), transparent 30rem) !important;
+        }
+
+        html[data-theme="dark"] .site-header {
+            background: rgba(15, 18, 16, 0.96) !important;
+            border-bottom: 1px solid #232a26 !important;
+        }
+
+        html[data-theme="dark"] .brand {
+            color: #ffffff !important;
+        }
+
+        html[data-theme="dark"] .nav-links a {
+            color: #9bb0a7 !important;
+        }
+
+        html[data-theme="dark"] .nav-links a:hover {
+            color: #2fa584 !important;
+        }
+
+        html[data-theme="dark"] .theme-toggle-btn {
+            background: #172a23 !important;
+            border: 1px solid #283730 !important;
+            color: #ffffff !important;
+        }
+
+        html[data-theme="dark"] .stat-card {
+            background: #131614 !important;
+            border: 1px solid #232a26 !important;
+        }
+
+        html[data-theme="dark"] .advisor-card {
+            background: #142821 !important;
+            border: 1px solid #283730 !important;
+        }
+
+        html[data-theme="dark"] .advisor-card h2 {
+            color: #ffffff !important;
+        }
+
+        html[data-theme="dark"] .advisor-card p {
+            color: #a4c7bb !important;
+        }
+
+        html[data-theme="dark"] .info-panel,
+        html[data-theme="dark"] .chat-panel,
+        html[data-theme="dark"] .form-panel {
+            background: #131614 !important;
+            border: 1px solid #232a26 !important;
+            color: #f0f6f3 !important;
+        }
+
+        html[data-theme="dark"] .stat-label,
+        html[data-theme="dark"] .stat-subtext,
+        html[data-theme="dark"] .muted,
+        html[data-theme="dark"] .popup-subtext {
+            color: #9bb0a7 !important;
+        }
+
+        html[data-theme="dark"] .welcome-row h1,
+        html[data-theme="dark"] .chat-heading h1,
+        html[data-theme="dark"] .auth-intro h1,
+        html[data-theme="dark"] .info-panel h3,
+        html[data-theme="dark"] .form-panel h2 {
+            color: #ffffff !important;
+        }
+
+        html[data-theme="dark"] .chat-form {
+            background: #131614 !important;
+            border-top: 1px solid #232a26 !important;
+        }
+
+        html[data-theme="dark"] input,
+        html[data-theme="dark"] textarea {
+            background: #0c0e0d !important;
+            color: #ffffff !important;
+            border: 1px solid #2a332e !important;
+        }
+
+        html[data-theme="dark"] .message p {
+            background: #141715 !important;
+            color: #f0f6f3 !important;
+            border: 1px solid #232a26 !important;
+        }
+
+        html[data-theme="dark"] .message.user p {
+            background: #2fa584 !important;
+            color: #ffffff !important;
+            border: none !important;
+        }
+
+        html[data-theme="dark"] .prompt-popup-card,
+        html[data-theme="dark"] .interactive-card {
+            background: #131614 !important;
+            border: 1.5px solid #2fa584 !important;
+            color: #f0f6f3 !important;
+        }
+
+        html[data-theme="dark"] .taluka-pill-btn,
+        html[data-theme="dark"] .interactive-taluka-btn,
+        html[data-theme="dark"] .suggestion-chip {
+            background: #191e1b !important;
+            border: 1px solid #2d3832 !important;
+            color: #f0f6f3 !important;
+        }
+
+        html[data-theme="dark"] .taluka-pill-btn:hover,
+        html[data-theme="dark"] .interactive-taluka-btn:hover,
+        html[data-theme="dark"] .suggestion-chip:hover {
+            background: #172a23 !important;
+            border-color: #2fa584 !important;
+            color: #ffffff !important;
+        }
+
+        html[data-theme="dark"] .status-pill,
+        html[data-theme="dark"] .mock-label {
+            background: #172a23 !important;
+            border: 1px solid #283730 !important;
+            color: #2fa584 !important;
+        }
+    </style>
+
+    <script>
+        function getSavedTheme() {
+            try {
+                var saved = localStorage.getItem('ruralbiz_theme');
+                if (saved === 'dark' || saved === 'light') return saved;
+            } catch (e) { }
+            return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        }
+
+        function applyTheme(theme) {
+            var target = (theme === 'dark') ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', target);
+            if (document.body) {
+                document.body.setAttribute('data-theme', target);
+            }
+            try {
+                localStorage.setItem('ruralbiz_theme', target);
+            } catch (e) { }
+
+            var iconEl = document.getElementById('theme-icon');
+            var textEl = document.getElementById('theme-text');
+            if (iconEl) iconEl.textContent = (target === 'dark') ? '☀️' : '🌙';
+            if (textEl) textEl.textContent = (target === 'dark') ? 'Light' : 'Dark';
+        }
+
+        function toggleRuralTheme() {
+            var current = document.documentElement.getAttribute('data-theme') || 'light';
+            var next = (current === 'dark') ? 'light' : 'dark';
+            applyTheme(next);
+        }
+
+        // Apply immediately before DOM renders
+        applyTheme(getSavedTheme());
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var current = document.documentElement.getAttribute('data-theme') || 'light';
+            applyTheme(current);
+        });
+    </script>
     {% block extra_head %}{% endblock %}
 </head>
 
@@ -26,6 +332,11 @@
         <nav class="nav-links" aria-label="Main navigation">
             <a href="{{ url_for('home') }}" id="nav-dashboard">Dashboard</a>
             <a href="{{ url_for('chat') }}" id="nav-advisor">AI Advisor</a>
+            <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleRuralTheme()"
+                aria-label="Toggle Dark/Light Mode" title="Toggle Theme">
+                <span class="theme-icon" id="theme-icon">🌙</span>
+                <span class="theme-text" id="theme-text">Dark</span>
+            </button>
             {% if user and user.username %}
             <span class="user-badge">👤 {{ user.username }}</span>
             <a href="{{ url_for('logout') }}" id="nav-logout">Log out</a>
@@ -38,6 +349,7 @@
     <main id="main-content">
         {% block content %}{% endblock %}
     </main>
+    <script src="{{ url_for('static', path='js/theme.js') }}"></script>
     <script src="{{ url_for('static', path='js/chat.js') }}"></script>
     {% block extra_scripts %}{% endblock %}
 </body>

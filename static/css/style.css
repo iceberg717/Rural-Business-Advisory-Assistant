@@ -8,6 +8,17 @@
   --coral: #e98262;
   --line: #dce3dc;
 }
+
+[data-theme="dark"] {
+  --ink: #e2ede8;
+  --muted: #94aca2;
+  --cream: #0c1815;
+  --paper: #122420;
+  --mint: #1a362f;
+  --green: #2fa584;
+  --coral: #f19277;
+  --line: #203c34;
+}
 * {
   box-sizing: border-box;
 }
